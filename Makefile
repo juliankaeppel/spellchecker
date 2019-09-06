@@ -1,9 +1,9 @@
-IDIR=../include
+IDIR=include
 CC=gcc
 # Optimization level zero for debugging, make clean when changing optimization level
 CFLAGS=-I$(IDIR) -Wall -Wextra -Werror -O0 -g --ansi --pedantic
 
-ODIR=obj
+ODIR=src/obj
 
 LIBS=
 
