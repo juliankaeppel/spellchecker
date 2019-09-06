@@ -1,6 +1,8 @@
 #include <trie.h>
 
-Trie* initTrie(const size_t dataSize) {
+Trie* initTrie(const size_t dataSize,
+        void* (*copyFunc)(const void* src, size_t size),
+        bool (*compFunc)(const void* a, const void* b, size_t size)) {
     Trie* trie = malloc(sizeof(Trie));
     
     trie->nodeList = NULL;
@@ -8,6 +10,10 @@ Trie* initTrie(const size_t dataSize) {
     trie->data = NULL;
     trie->dataSize = dataSize;
     trie->endPoint = false;
+    if (copyFunc) trie->copyFunc = copyFunc;
+    else trie->copyFunc = copyData;
+    if (compFunc) trie->compFunc = compFunc;
+    else trie->compFunc = compData;
 
     return trie;
 }
@@ -38,10 +44,10 @@ Trie* addNode(Trie* trie, const void* data) {
     trie->nodeListSize++;
     trie->nodeList = realloc(trie->nodeList, trie->nodeListSize * sizeof(Trie*));
     /* Set new node */
-    trie->nodeList[index] = initTrie(trie->dataSize);
+    trie->nodeList[index] = initTrie(trie->dataSize, trie->copyFunc, trie->compFunc);
 
     /* Copy data into new node */
-    trie->nodeList[index]->data = copyData(data, trie->dataSize);
+    trie->nodeList[index]->data = trie->copyFunc(data, trie->dataSize);
 
     return trie->nodeList[index];
 }
@@ -70,7 +76,7 @@ Trie* searchTrieData(const Trie* trie, const void* data) {
 
     /* Loop through each node and return pointer to trie if it's data matches the input */
     for (i = 0; i < trie->nodeListSize; i++)
-        if (compareData(trie->nodeList[i]->data, data, trie->dataSize)) return trie->nodeList[i];
+        if (trie->compFunc(trie->nodeList[i]->data, data, trie->dataSize)) return trie->nodeList[i];
 
     /* If no matching node is found, return NULL */
     return NULL;
@@ -83,18 +89,18 @@ void* copyData(const void* src, size_t size) {
     char* destByte = malloc(size);
 
     /* Copy each byte from srcByte to destByte */
-    while (size-- > 0) destByte[size] = srcByte[size];
+    while (size--) destByte[size] = srcByte[size];
 
     return destByte;
 }
 
-bool compareData(const void* a, const void* b, size_t size) {
+bool compData(const void* a, const void* b, size_t size) {
     /* Cast a and b to char pointers */
     char* aByte = (char*)a;
     char* bByte = (char*)b;
 
     /* If any bytes in aByte and bByte don't match, return false */
-    while (size-- > 0) if (aByte[size] != bByte[size]) return false;
+    while (size--) if (aByte[size] != bByte[size]) return false;
     /* If end of loop is reached, a and b are equal; return true */
     return true;
 }

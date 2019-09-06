@@ -10,7 +10,7 @@ Trie* initSpellChecker(const char* wordList) {
     /* Size of data */
     size_t dataSize = 0;
     /* Pointer to trie being used, with chars as data type */
-    Trie* trie = initTrie(sizeof(char));
+    Trie* trie = initTrie(sizeof(char), NULL, NULL);
 
     size_t i;
 

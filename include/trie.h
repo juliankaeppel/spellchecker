@@ -19,13 +19,22 @@ struct Trie {
     /* Size of data */
     size_t dataSize;
 
+    /* Copy function */
+    void* (*copyFunc)(const void* src, size_t size);
+
+    /* Compare function */
+    bool (*compFunc)(const void* a, const void* b, size_t size);
+
     /* Flag for whether or not this node is an endpoint */
     bool endPoint;
 };
 
-/* Accepts the size of data stored in the trie
+/* Accepts the size of data stored in the trie and pointers to copy and compare functions
+ * If no functions are specified, the default ones are used
  * Returns a pointer to the newly initialized trie with no data in it */
-Trie* initTrie(const size_t dataSize);
+Trie* initTrie(const size_t dataSize,
+        void* (*copyFunc)(const void* src, size_t size),
+        bool (*compFunc)(const void* a, const void* b, size_t size));
 
 /* Frees all data contained within specified trie */
 void deleteTrie(Trie* trie);
@@ -45,7 +54,7 @@ Trie* searchTrieData(const Trie* trie, const void* data);
 void* copyData(const void* src, size_t size);
 
 /* Returns whether or not two void pointers have the same value */
-bool compareData(const void* a, const void* b, size_t size);
+bool compData(const void* a, const void* b, size_t size);
 
 /* Search through trie for occurence of data sequence */
 bool searchTrieSequence(const Trie* trie, void* const* sequence, const size_t sequenceSize);
