@@ -4,7 +4,7 @@ Trie* initSpellChecker(const char* wordList) {
     /* file pointer */
     FILE* fp;
     /* Active char being read from file */
-    char ch;
+    int ch;
     /* Pointer to data in trie-readable format */
     void** data = NULL;
     /* Size of data */
